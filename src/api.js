@@ -46,39 +46,66 @@ const apiRequest = async (url, options = {}) => {
 
 // Fungsi untuk mendapatkan semua notes
 const getNotes = async () => {
-  return await apiRequest(API_URL);
+  try {
+    const response = await apiRequest(`${API_URL}/notes`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching notes:', error);
+    // Fallback ke data lokal jika ada
+    if (typeof window !== 'undefined' && window.notesData) {
+      return { data: window.notesData };
+    }
+    throw error;
+  }
 };
 
 // Fungsi untuk menambahkan note baru
 const addNote = async (note) => {
-  const options = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(note),
-  };
-  const newNote = await apiRequest(API_URL, options);
-  showUserFeedback('Note added successfully!');
-  return newNote;
+  try {
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(note),
+    };
+    const newNote = await apiRequest(`${API_URL}/notes`, options);
+    showUserFeedback('Note added successfully!');
+    return newNote;
+  } catch (error) {
+    console.error('Error adding note:', error);
+    showUserFeedback('Failed to add note', true);
+    throw error;
+  }
 };
 
 // Fungsi untuk mengarsipkan note (mengubah status menjadi archived)
 const archiveNote = async (noteId) => {
-  const options = {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ archived: true }),
-  };
-  const updatedNote = await apiRequest(`${API_URL}/${noteId}`, options);
-  showUserFeedback('Note archived successfully!');
-  return updatedNote;
+  try {
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    };
+    const updatedNote = await apiRequest(`${API_URL}/notes/${noteId}/archive`, options);
+    showUserFeedback('Note archived successfully!');
+    return updatedNote;
+  } catch (error) {
+    console.error('Error archiving note:', error);
+    showUserFeedback('Failed to archive note', true);
+    throw error;
+  }
 };
 
 // Fungsi untuk menghapus note
 const deleteNote = async (noteId) => {
-  const options = { method: 'DELETE' };
-  await apiRequest(`${API_URL}/${noteId}`, options);
-  showUserFeedback('Note deleted successfully!');
-  return true;
+  try {
+    const options = { method: 'DELETE' };
+    await apiRequest(`${API_URL}/notes/${noteId}`, options);
+    showUserFeedback('Note deleted successfully!');
+    return true;
+  } catch (error) {
+    console.error('Error deleting note:', error);
+    showUserFeedback('Failed to delete note', true);
+    throw error;
+  }
 };
 
 // Fungsi untuk menyegarkan tampilan catatan
@@ -90,9 +117,14 @@ const refreshNotes = async () => {
 // Fungsi untuk menampilkan notes secara dinamis
 const displayNotes = (notes) => {
   const notesContainer = document.getElementById('notes-grid');
+  if (!notesContainer) {
+    console.warn('Notes container not found');
+    return;
+  }
+  
   notesContainer.innerHTML = ''; // Clear previous notes
 
-  if (notes.length === 0) {
+  if (!Array.isArray(notes) || notes.length === 0) {
     const noNotesMessage = document.createElement('div');
     noNotesMessage.textContent = 'No notes available';
     noNotesMessage.style.textAlign = 'center';
@@ -104,11 +136,11 @@ const displayNotes = (notes) => {
       noteElement.className = 'note-item';
       noteElement.innerHTML = `
         <h3>${note.title}</h3>
-        <p>${note.content}</p>
+        <p>${note.body || note.content || 'No content'}</p>
         <small>Created at: ${new Date(note.createdAt).toLocaleString()}</small>
         <div class="note-actions">
-          <button onclick="archiveNote('${note.id}')">Archive</button>
-          <button onclick="deleteNote('${note.id}')">Delete</button>
+          <button onclick="handleArchiveNote('${note.id}')">Archive</button>
+          <button onclick="handleDeleteNote('${note.id}')">Delete</button>
         </div>
       `;
       notesContainer.appendChild(noteElement);
@@ -116,13 +148,44 @@ const displayNotes = (notes) => {
   }
 };
 
+// Global functions for handling UI actions
+window.handleArchiveNote = async (noteId) => {
+  try {
+    await archiveNote(noteId);
+    await refreshNotes();
+  } catch (error) {
+    console.error('Error archiving note:', error);
+  }
+};
+
+window.handleDeleteNote = async (noteId) => {
+  try {
+    await deleteNote(noteId);
+    await refreshNotes();
+  } catch (error) {
+    console.error('Error deleting note:', error);
+  }
+};
+
 // Ambil catatan dan tampilkan saat halaman dimuat
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const notes = await getNotes();
-    displayNotes(notes); // Menampilkan catatan setelah data diterima
+    // Add small delay to ensure DOM is fully loaded
+    setTimeout(async () => {
+      const notes = await getNotes();
+      if (notes && notes.data) {
+        displayNotes(notes.data); // API response has data property
+      } else {
+        displayNotes(notes || []); // Fallback for different response formats
+      }
+    }, 100);
   } catch (error) {
     console.error('Error loading notes:', error);
+    // Show fallback message
+    const notesContainer = document.getElementById('notes-grid');
+    if (notesContainer) {
+      notesContainer.innerHTML = '<p>Failed to load notes. Please try again later.</p>';
+    }
   }
 });
 

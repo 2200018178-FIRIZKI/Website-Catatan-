@@ -196,7 +196,16 @@ const renderNotes = (notes) => {
   }
 };
 
-// Make functions globally available
+// Export functions for ES6 modules
+export { 
+  notesData, 
+  fetchNotes, 
+  toggleArchiveNote, 
+  deleteNoteFromData, 
+  renderNotes 
+};
+
+// Make functions globally available for legacy scripts
 window.notesHelpers = {
   fetchNotes,
   toggleArchiveNote,

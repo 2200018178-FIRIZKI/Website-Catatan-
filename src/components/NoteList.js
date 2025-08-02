@@ -1,12 +1,39 @@
 // Mengimpor data notes dari file lain
-import { notesData } from './notes';  // Pastikan path-nya sesuai
+import { notesData } from './notes.js';  // Perbaiki path
+import { showNotes } from './NoteItem.js';  // Perbaiki path
+
+// Fungsi fallback jika showNotes tidak tersedia
+const displayNotesLocal = (notes, container) => {
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  notes.forEach(note => {
+    const noteDiv = document.createElement('div');
+    noteDiv.className = 'note-item';
+    noteDiv.innerHTML = `
+      <h3>${note.title}</h3>
+      <p>${note.body}</p>
+      <small>Created: ${new Date(note.createdAt).toLocaleDateString()}</small>
+      <div class="note-actions">
+        <button onclick="archiveNote('${note.id}')">Archive</button>
+        <button onclick="deleteNote('${note.id}')">Delete</button>
+      </div>
+    `;
+    container.appendChild(noteDiv);
+  });
+};
 
 // Menentukan container untuk menampilkan notes
 const notesContainer = document.getElementById('notes-container');
 
 // Menampilkan semua notes di container
 const displayNotes = () => {
-  showNotes(notesData, notesContainer);  // Panggil fungsi showNotes untuk menampilkan notes
+  if (typeof showNotes === 'function' && notesContainer) {
+    showNotes(notesData, notesContainer);  // Panggil fungsi showNotes untuk menampilkan notes
+  } else if (notesContainer) {
+    displayNotesLocal(notesData, notesContainer); // Fallback function
+  }
 };
 
 // Menambahkan event listener jika ada interaksi seperti menambah, menghapus, atau mengarsipkan notes
@@ -37,16 +64,31 @@ const setupEventListeners = () => {
   });
 
   // Event listeners lainnya bisa ditambahkan di sini untuk menghapus atau mengarsipkan notes
+  // Global functions untuk onclick handlers
+  window.archiveNote = (noteId) => {
+    const note = notesData.find(note => note.id === noteId);
+    if (note) {
+      note.archived = true;
+      displayNotes();
+    }
+  };
+
+  window.deleteNote = (noteId) => {
+    const noteIndex = notesData.findIndex(note => note.id === noteId);
+    if (noteIndex !== -1) {
+      notesData.splice(noteIndex, 1);
+      displayNotes();
+    }
+  };
+
   // Misalnya, event listener untuk menghapus note berdasarkan id
   const deleteNoteButton = document.getElementById('delete-note');
-  deleteNoteButton.addEventListener('click', (event) => {
-    const noteIdToDelete = event.target.getAttribute('data-id');
-    const noteIndex = notesData.findIndex(note => note.id === noteIdToDelete);
-    if (noteIndex !== -1) {
-      notesData.splice(noteIndex, 1);  // Hapus note berdasarkan id
-      displayNotes();  // Tampilkan ulang notes setelah penghapusan
-    }
-  });
+  if (deleteNoteButton) {
+    deleteNoteButton.addEventListener('click', (event) => {
+      const noteIdToDelete = event.target.getAttribute('data-id');
+      window.deleteNote(noteIdToDelete);
+    });
+  }
 };
 
 // Menjalankan fungsi untuk setup dan menampilkan notes
