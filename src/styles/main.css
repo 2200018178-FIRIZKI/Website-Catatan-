@@ -1,0 +1,252 @@
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+header {
+  background: #6200ea;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+main {
+  padding: 1rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  background: hsl(253, 43%, 47%);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+  font-weight: bold;
+}
+
+form input,
+form textarea,
+form button {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+form button {
+  background-color: #6200ea;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: #3700b3;
+}
+
+#notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+note-item {
+  display: block;
+  background-color: #5781da;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+note-item h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  color: #a17676;
+}
+
+note-item p {
+  font-size: 1rem;
+  color: #351515;
+  margin-bottom: 10px;
+}
+
+note-item small {
+  display: block;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.note-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.note-actions button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.note-actions button:hover {
+  background-color: #3700b3;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  #notes-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  #notes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Styling for custom element input-catatan */
+input-catatan {
+  display: block;
+  margin: 20px auto;
+  max-width: 600px;
+}
+
+input-catatan div {
+  display: flex;
+  flex-direction: column;
+}
+
+input-catatan input,
+input-catatan textarea {
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+input-catatan button {
+  background-color: #741c9c;
+  color: rgb(212, 75, 75);
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+input-catatan button:hover {
+  background-color: #512baa;
+}
+
+/* Enhancing the shadow DOM components */
+input-catatan ::placeholder {
+  color: #dd0b0b;
+}
+
+/* Style for Dropdown (select) */
+#note-category {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #9261e0;
+  appearance: none; /* Remove default dropdown arrow */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="gray" d="M7 10l5 5 5-5z"></path></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px;
+  margin-bottom: 1rem;
+}
+
+#note-category:focus {
+  border-color: #4f317a;
+  outline: none;
+  box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+}
+
+/* Style for Checkbox */
+label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+#note-priority {
+  width: 18px;
+  height: 18px;
+  accent-color: #6200ea;
+  cursor: pointer;
+}
+
+#note-priority:checked + span {
+  font-weight: bold;
+  color: #6200ea;
+}
+
+/* Tooltip Styling */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: #333;
+  color: #c42d2d;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}  
+
+/* Progress Bar */
+.progress-container {
+  background-color: black;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 20px;
+  margin-top: 1rem;
+}
+
+.progress-bar {
+  background-color: #6200ea;
+  height: 100%;
+  width: 0%; /* Starting width */
+  transition: width 0.4s ease;
+}
+
+#note-category option::before {
+  content: attr(data-icon);
+  margin-right: 8px;
+}

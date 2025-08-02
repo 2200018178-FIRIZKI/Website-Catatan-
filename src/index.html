@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes App</title>
+  <script src="./components/NoteItem.js" defer></script>  <!-- Pastikan pathnya sesuai -->
+</head>
+<body>
+  <header>
+    <app-bar></app-bar>
+  </header>
+  <main>
+    <loading-indicator id="loadingIndicator" style="display: none;"></loading-indicator>
+
+    <form id="note-form">
+      <input-catatan></input-catatan>
+    </form>    
+
+    <div id="note-list-container"></div>
+
+    <button id="add-note-btn">Add Note</button>
+
+    <div id="add-note-modal" style="display: none;">
+      <button id="close-modal">Close</button>
+      <form id="note-form">
+        <input type="text" id="note-title" placeholder="Title" required />
+        <textarea id="note-body" placeholder="Body" required></textarea>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+
+    <h3 id="progress-label">Progress</h3>
+    <progress id="progress-bar" value="50" max="100" aria-labelledby="progress-label"></progress>
+ 
+    <label for="note-category">Choose a category:</label>
+    <select id="note-category" aria-label="Choose note category">
+      <option value="work" data-icon="🖥️">Work</option>
+      <option value="personal" data-icon="🏡">Personal</option>
+      <option value="study" data-icon="📚">Study</option>
+      <option value="creative" data-icon="💡">Creative Ideas</option>
+    </select>
+ 
+    <div class="tooltip">
+      <span class="tooltip-text">Choose a category for your note</span>
+    </div>
+ 
+    <label>
+      <input type="checkbox" id="note-priority" /> Mark as priority
+    </label>
+
+    <div id="notes-grid"></div>
+
+    <section id="notes-grid" aria-label="Notes Grid"></section>
+
+    <script>
+      // Menampilkan indikator loading saat mengambil data
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      loadingIndicator.style.display = 'block';
+  
+      // Simulasi pengambilan data (misalnya 2 detik)
+      setTimeout(() => {
+        // Sembunyikan indikator loading setelah data dimuat
+        loadingIndicator.style.display = 'none';
+  
+        // Simulasi penampilan konten setelah loading selesai
+        document.getElementById('notes-grid').innerHTML = "<p>Data berhasil dimuat!</p>";
+      }, 2000); // Simulasi delay
+    </script>
+    
+    <script src="./components/notes.js"></script>
+
+    <script type="module" src="api.js"></script>
+  </main>
+</body>
+</html>
+
